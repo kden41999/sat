@@ -244,12 +244,12 @@ async def create_box(
 
 @api_router.get("/boxes", response_model=List[dict])
 async def get_boxes(current_user: User = Depends(get_current_user)):
-    boxes = await db.boxes.find({"is_available": True}).to_list(100)
+    boxes = await db.boxes.find({"is_available": True}, {"_id": 0}).to_list(100)
     
     # Populate with restaurant info
     result = []
     for box in boxes:
-        restaurant = await db.restaurants.find_one({"id": box["restaurant_id"]})
+        restaurant = await db.restaurants.find_one({"id": box["restaurant_id"]}, {"_id": 0})
         box_with_restaurant = {
             **box,
             "restaurant_name": restaurant["name"] if restaurant else "Unknown",
