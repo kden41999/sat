@@ -264,11 +264,11 @@ async def get_my_boxes(current_user: User = Depends(get_current_user)):
     if current_user.role != UserRole.RESTAURANT:
         raise HTTPException(status_code=403, detail="Only restaurants can access this endpoint")
     
-    restaurant = await db.restaurants.find_one({"user_id": current_user.id})
+    restaurant = await db.restaurants.find_one({"user_id": current_user.id}, {"_id": 0})
     if not restaurant:
         raise HTTPException(status_code=404, detail="Restaurant profile not found")
     
-    boxes = await db.boxes.find({"restaurant_id": restaurant["id"]}).to_list(100)
+    boxes = await db.boxes.find({"restaurant_id": restaurant["id"]}, {"_id": 0}).to_list(100)
     return [Box(**box) for box in boxes]
 
 # Favorites Routes
