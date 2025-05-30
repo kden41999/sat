@@ -302,14 +302,14 @@ async def get_favorites(current_user: User = Depends(get_current_user)):
     if current_user.role != UserRole.CUSTOMER:
         raise HTTPException(status_code=403, detail="Only customers can access favorites")
     
-    favorites = await db.favorites.find({"user_id": current_user.id}).to_list(100)
+    favorites = await db.favorites.find({"user_id": current_user.id}, {"_id": 0}).to_list(100)
     
     # Get box details for each favorite
     result = []
     for favorite in favorites:
-        box = await db.boxes.find_one({"id": favorite["box_id"]})
+        box = await db.boxes.find_one({"id": favorite["box_id"]}, {"_id": 0})
         if box:
-            restaurant = await db.restaurants.find_one({"id": box["restaurant_id"]})
+            restaurant = await db.restaurants.find_one({"id": box["restaurant_id"]}, {"_id": 0})
             favorite_with_details = {
                 **box,
                 "restaurant_name": restaurant["name"] if restaurant else "Unknown",
